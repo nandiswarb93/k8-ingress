@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app1
-  # these are replica set labels
   labels:
     purpose: ingress-demo
     project: roboshop
@@ -10,16 +9,13 @@ metadata:
 spec:
   replicas: 2
   selector:
-    # these labels are used to select pods
     matchLabels:
       purpose: ingress-demo
       project: roboshop
       app: app1
-  # pod definition
   template:
     metadata:
       labels:
-        # purpose: dp-demo
         purpose: ingress-demo
         project: roboshop
         app: app1
@@ -27,46 +23,45 @@ spec:
       containers:
       - name: app1
         image: nandiswarb93/app1:v1
+        ports:
+        - containerPort: 80
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: app1
 spec:
   selector:
-    project: roboshop
     purpose: ingress-demo
+    project: roboshop
     app: app1
-    
   ports:
-    - protocol: TCP
-      port: 80 # service port
-      targetPort: 80 # container port
-
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
 ---
-#ingress resource
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-metadata: 
+metadata:
   name: app1
-  annotations : 
-    alb.ingress.kubernetes.io/listen-ports : '[{"HTTPS": 443}]'
+  annotations:
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:200651372723:certificate/7fff24ed-b1ed-499c-b3db-8d6bb4051733
-    alb.ingress.kubernetes.io/scheme : internet-facing
-    alb.ingress.kubernetes.io/tags : Environment=dev,Project=roboshop
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/tags: Environment=dev,Project=roboshop
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/group.name: roboshop
-spec : 
-  ingressClassName : alb
-  rules :
-  - host : "app1.nandiswar.fun"
-    http :
-      paths : 
-      - pathType : Prefix
-        path : "/"
-        backend : 
-          service : 
-            name : app1
+spec:
+  ingressClassName: alb
+  rules:
+  - host: app1.nandiswar.fun
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app1
             port:
-              number : 80
+              number: 80
