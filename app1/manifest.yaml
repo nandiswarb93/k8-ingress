@@ -54,9 +54,7 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports : '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:200651372723:certificate/7fff24ed-b1ed-499c-b3db-8d6bb4051733
     alb.ingress.kubernetes.io/schema : internet-facing
-    alb.ingress.kubernetes.io/tags : Environment=dev,Project=roboshp
-
-
+    alb.ingress.kubernetes.io/tags : Environment=dev,Project=roboshop
 spec : 
   ingressClassName : alb
   rules :
