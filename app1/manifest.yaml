@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app1
+  # these are replica set labels
   labels:
     purpose: ingress-demo
     project: roboshop
@@ -9,13 +10,16 @@ metadata:
 spec:
   replicas: 2
   selector:
+    # these labels are used to select pods
     matchLabels:
       purpose: ingress-demo
       project: roboshop
       app: app1
+  # pod definition
   template:
     metadata:
       labels:
+        # purpose: dp-demo
         purpose: ingress-demo
         project: roboshop
         app: app1
@@ -23,8 +27,6 @@ spec:
       containers:
       - name: app1
         image: nandiswarb93/app1:v1
-        ports:
-        - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -36,10 +38,9 @@ spec:
     project: roboshop
     app: app1
   ports:
-  - name: http
-    protocol: TCP
-    port: 80
-    targetPort: 80
+    - protocol: TCP
+      port: 80 # service port
+      targetPort: 80 # container port
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -55,11 +56,11 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-  - host: app1.nandiswar.fun
+  - host: "app1.nandiswar.fun"
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - pathType: Prefix
+        path: "/"
         backend:
           service:
             name: app1
